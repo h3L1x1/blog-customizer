@@ -11,6 +11,8 @@ declare module '*.png';
 
 declare module '*.jpg';
 
+declare module '*clsx';
+
 declare module '*.json';
 
 declare module '*.module.css' {
