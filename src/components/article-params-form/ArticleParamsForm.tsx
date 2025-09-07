@@ -17,39 +17,26 @@ import { Select } from 'src/ui/select';
 
 interface ArticleParamsFormProps {
 	articleState: ArticleStateType;
-	onFontFamilyChange: (option: OptionType) => void;
-	onFontSizeChange: (option: OptionType) => void;
-	onFontColorChange: (option: OptionType) => void;
-	onContentWidthChange: (option: OptionType) => void;
-	onBackgroundColorChange: (option: OptionType) => void;
+	onStateChange: (newState: ArticleStateType) => void;
 	handleReset: () => void;
 	handleSubmit: (evt: React.FormEvent) => void;
-	isOpen: boolean;
-	toggleSideBar: () => void;
 }
 
 export const ArticleParamsForm: React.FC<ArticleParamsFormProps> = ({
 	articleState,
-	onFontFamilyChange,
-	onFontSizeChange,
-	onFontColorChange,
-	onContentWidthChange,
-	onBackgroundColorChange,
+	onStateChange,
 	handleReset,
 	handleSubmit,
-	isOpen,
-	toggleSideBar,
 }) => {
+	const [isFormOpen, setIsFormOpen] = React.useState(false);
 	const sidebarRef = React.useRef<HTMLDivElement>(null);
 	const buttonRef = React.useRef<HTMLDivElement>(null);
 	const [tempValues, setTempValues] = React.useState(articleState);
 
-	// Обновляем временные значения при изменении articleState
 	React.useEffect(() => {
 		setTempValues(articleState);
 	}, [articleState]);
 
-	// Обработчики для временных изменений
 	const handleTempFontFamilyChange = (option: OptionType) => {
 		setTempValues((prev) => ({ ...prev, fontFamilyOption: option }));
 	};
@@ -70,25 +57,19 @@ export const ArticleParamsForm: React.FC<ArticleParamsFormProps> = ({
 		setTempValues((prev) => ({ ...prev, contentWidth: option }));
 	};
 
-	// Обработчик submit
 	const handleFormSubmit = (evt: React.FormEvent) => {
 		evt.preventDefault();
-
-		// Применяем все изменения
-		onFontFamilyChange(tempValues.fontFamilyOption);
-		onFontSizeChange(tempValues.fontSizeOption);
-		onFontColorChange(tempValues.fontColor);
-		onBackgroundColorChange(tempValues.backgroundColor);
-		onContentWidthChange(tempValues.contentWidth);
-
-		// Вызываем переданный handleSubmit
+		onStateChange(tempValues);
 		handleSubmit(evt);
 	};
 
-	// Обработчик сброса
 	const handleFormReset = () => {
 		setTempValues(articleState);
 		handleReset();
+	};
+
+	const toggleSideBar = () => {
+		setIsFormOpen((prev) => !prev);
 	};
 
 	const handleClickOutside = React.useCallback(
@@ -99,10 +80,10 @@ export const ArticleParamsForm: React.FC<ArticleParamsFormProps> = ({
 				buttonRef.current &&
 				!evt.composedPath().includes(buttonRef.current)
 			) {
-				toggleSideBar();
+				setIsFormOpen(false);
 			}
 		},
-		[sidebarRef, buttonRef, toggleSideBar]
+		[setIsFormOpen]
 	);
 
 	React.useEffect(() => {
@@ -115,14 +96,17 @@ export const ArticleParamsForm: React.FC<ArticleParamsFormProps> = ({
 	return (
 		<>
 			<div ref={buttonRef}>
-				<ArrowButton isOpen={isOpen} onClick={toggleSideBar} />
+				<ArrowButton isOpen={isFormOpen} onClick={toggleSideBar} />
 			</div>
 			<aside
 				ref={sidebarRef}
 				className={`${styles.container} ${
-					isOpen ? styles.container_open : ''
+					isFormOpen ? styles.container_open : ''
 				}`}>
-				<form className={styles.form} onSubmit={handleFormSubmit}>
+				<form
+					className={styles.form}
+					onSubmit={handleFormSubmit}
+					onReset={handleFormReset}>
 					{/* Шрифт - Select */}
 					<div className={styles.section}>
 						<Select
@@ -175,12 +159,7 @@ export const ArticleParamsForm: React.FC<ArticleParamsFormProps> = ({
 					</div>
 
 					<div className={styles.bottomContainer}>
-						<Button
-							title='Сбросить'
-							htmlType='button'
-							type='clear'
-							onClick={handleFormReset}
-						/>
+						<Button title='Сбросить' htmlType='reset' type='clear' />
 						<Button title='Применить' htmlType='submit' type='apply' />
 					</div>
 				</form>
