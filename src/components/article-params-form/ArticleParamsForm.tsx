@@ -2,6 +2,7 @@ import { ArrowButton } from 'src/ui/arrow-button';
 import { Button } from 'src/ui/button';
 import React from 'react';
 import { RadioGroup } from 'src/ui/radio-group';
+import clsx from 'clsx';
 import {
 	OptionType,
 	fontFamilyOptions,
@@ -87,11 +88,12 @@ export const ArticleParamsForm: React.FC<ArticleParamsFormProps> = ({
 	);
 
 	React.useEffect(() => {
+		if (!isFormOpen) return;
 		document.body.addEventListener('click', handleClickOutside);
 		return () => {
 			document.body.removeEventListener('click', handleClickOutside);
 		};
-	}, [handleClickOutside]);
+	}, [isFormOpen, handleClickOutside]);
 
 	return (
 		<>
@@ -100,15 +102,13 @@ export const ArticleParamsForm: React.FC<ArticleParamsFormProps> = ({
 			</div>
 			<aside
 				ref={sidebarRef}
-				className={`${styles.container} ${
-					isFormOpen ? styles.container_open : ''
-				}`}>
+				className={clsx(styles.container, isFormOpen && styles.container_open)}>
 				<form
-					className={styles.form}
+					className={clsx(styles.form)}
 					onSubmit={handleFormSubmit}
 					onReset={handleFormReset}>
 					{/* Шрифт - Select */}
-					<div className={styles.section}>
+					<div className={clsx(styles.section)}>
 						<Select
 							selected={tempValues.fontFamilyOption}
 							onChange={handleTempFontFamilyChange}
@@ -118,7 +118,7 @@ export const ArticleParamsForm: React.FC<ArticleParamsFormProps> = ({
 					</div>
 
 					{/* Размер шрифта - RadioGroup */}
-					<div className={styles.section}>
+					<div className={clsx(styles.section)}>
 						<RadioGroup
 							name='fontSize'
 							options={fontSizeOptions}
@@ -129,7 +129,7 @@ export const ArticleParamsForm: React.FC<ArticleParamsFormProps> = ({
 					</div>
 
 					{/* Цвет текста - Select */}
-					<div className={styles.section}>
+					<div className={clsx(styles.section)}>
 						<Select
 							selected={tempValues.fontColor}
 							onChange={handleTempFontColorChange}
@@ -139,7 +139,7 @@ export const ArticleParamsForm: React.FC<ArticleParamsFormProps> = ({
 					</div>
 
 					{/* Цвет фона - Select */}
-					<div className={styles.section}>
+					<div className={clsx(styles.section)}>
 						<Select
 							selected={tempValues.backgroundColor}
 							onChange={handleTempBackgroundColorChange}
@@ -149,7 +149,7 @@ export const ArticleParamsForm: React.FC<ArticleParamsFormProps> = ({
 					</div>
 
 					{/* Ширина контента - Select */}
-					<div className={styles.section}>
+					<div className={clsx(styles.section)}>
 						<Select
 							selected={tempValues.contentWidth}
 							onChange={handleTempContentWidthChange}
@@ -158,7 +158,7 @@ export const ArticleParamsForm: React.FC<ArticleParamsFormProps> = ({
 						/>
 					</div>
 
-					<div className={styles.bottomContainer}>
+					<div className={clsx(styles.bottomContainer)}>
 						<Button title='Сбросить' htmlType='reset' type='clear' />
 						<Button title='Применить' htmlType='submit' type='apply' />
 					</div>
